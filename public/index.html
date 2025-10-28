@@ -12,15 +12,17 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Your web app's Firebase configuration
+        // !!! IMPORTANT: The values below MUST be replaced with your actual keys from Firebase Project Settings !!!
         const firebaseConfig = {
-            apiKey: "AIzaSyAQmL_8cxdWiC920C-GnrV6GS4S_wBV5y0",
-            authDomain: "esp32-weather-dashboard.firebaseapp.com",
-            projectId: "esp32-weather-dashboard",
-            storageBucket: "esp32-weather-dashboard.firebasestorage.app",
-            messagingSenderId: "846543764599",
-            appId: "1:846543764599:web:de34bec4b89969043cda72"
+          apiKey: "AIzaSyAQmL_8cxdWiC920C-GnrV6GS4S_wBV5y0", // ⬅️ REPLACE THIS API KEY
+          authDomain: "esp32-weather-dashboard.firebaseapp.com",
+          projectId: "esp32-weather-dashboard", // ⬅️ REPLACE THIS PROJECT ID (ONLY IF DIFFERENT)
+          storageBucket: "esp32-weather-dashboard.firebasestorage.app",
+          messagingSenderId: "846543764599",
+          appId: "1:846543764599:web:de34bec4b89969043cda72"
         };
-        
+
         // Initialize Firebase services
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -45,7 +47,8 @@
         async function startRealTimeListener() {
             try {
                 // 1. Authenticate Anonymously (Satisfies the secure database rule)
-                await signInAnonymously(auth);
+                // This is the line that requires the correct apiKey and authDomain
+                await signInAnonymously(auth); 
                 console.log("Signed in anonymously. Starting listener...");
                 
                 // 2. Set up the Real-Time Listener
@@ -62,12 +65,13 @@
                     }
                 }, (error) => {
                     console.error("Firestore Listener Error:", error);
-                    document.getElementById(LOADING_ID).textContent = "ERROR: Failed to connect to database.";
+                    document.getElementById(LOADING_ID).textContent = `ERROR: Firestore Listener failed (${error.code}).`;
                 });
 
             } catch (error) {
+                // This catches the 'auth/configuration-not-found' error specifically
                 console.error("Authentication or Initialization Error:", error);
-                document.getElementById(LOADING_ID).textContent = `CRITICAL ERROR: ${error.code}. Check API keys.`;
+                document.getElementById(LOADING_ID).textContent = `CRITICAL ERROR: ${error.code}. Ensure your Firebase configuration is correct and that Auth is enabled in your project.`;
             }
         }
 
